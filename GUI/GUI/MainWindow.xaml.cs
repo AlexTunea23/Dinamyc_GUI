@@ -33,7 +33,10 @@ namespace GUI
         LineSeries lineSeries1 = new LineSeries();
         bool flag = false;
         SerialProvider serial;
-
+        public bool flagFormat;
+        double MaxDataPoint = 200;
+        int contor;
+        DispatcherTimer timer = new DispatcherTimer();
 
         List<ObservableCollection<KeyValuePair<double, double>>> sensor = new List<ObservableCollection<KeyValuePair<double, double>>>();
         //List<LineSeries> lineSeries= new List<LineSeries>();
@@ -122,74 +125,90 @@ namespace GUI
             {
                 try
                 {
-                    serial.SerialOpen();
-                    serial.SerialReceive();
-                    DispatcherTimer timer = new DispatcherTimer();
-                    timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+                    if (!serial.IsOpen)
+                    {
+                        serial.SerialOpen();
+                        serial.SerialReceive();
+                    }
+                    timer.Interval = new TimeSpan(0, 0, 0, 0, 1);
                     timer.Tick += new EventHandler(timer_Tick);
                     timer.IsEnabled = true;
                     buttonStart.Content = "Stop";
                 }
-                catch
+                catch(Exception ex)
                 {
                     MessageBox.Show("Port is not selected");
                 }
             }
             else
             {
-               serial.SerialClose();
+                timer.IsEnabled = false;
+               //serial.SerialClose();
                buttonStart.Content = "Start";
             }
         }
 
-
-
-
-
-
-
-
         double i = 0;
         private void timer_Tick(object sender, EventArgs e)
-        {   
+        {
             var databuff = serial.GetFirstDataBuff();
+           
             if (databuff != null)
             {
-                string[] receiveData = databuff.Split('@');
-
-
-                string[] axis = receiveData[0].Split(';');
-
-
-
-                values = receiveData[1].Split(',');
-
+                string[] values = databuff.Split(',');
+                
                 if (flag == false)
                 {
                     for (int k = 0; k < values.Length; k++)
                     {
                         sensor.Add(new ObservableCollection<KeyValuePair<double, double>>());
-                        CreateLineSeries(k ,axis[k]);
+                        CreateLineSeries(k);
                     }
                 }
                 flag = true;
+                //if(values.Length==3)
+                var checkconversion = true;
+                var setValues = new List<KeyValuePair<double, double>>();
                 for (int j = 0; j < values.Length; j++)
                 {
-                    var sensorValue = Double.Parse(values[j]);
-                    sensor[j].Add(new KeyValuePair<double, double>(i, sensorValue));
+                    
+                    double tempVal=0;
+                    checkconversion = checkconversion && Double.TryParse(values[j], out tempVal);
+                    if (!checkconversion)
+                    {
+                        contor += 1;
+                        //receiveBlock.Text =""+ contor;
+                        Application.Current.Dispatcher.Invoke(new Action(() => { receiveBlock.Text += "Missing data counter" + contor; }));
+                        break; 
+                    }
+                        
+                    //    int contor=0;
+                    //    contor++;
+                    //    Application.Current.Dispatcher.Invoke(new Action(() => { receiveBlock.Text += "Missing data counter" + contor; }));
+                    //}
+                    setValues.Add(new KeyValuePair<double, double>(i, tempVal));
                 }
-                i += 1; 
+                if (checkconversion)
+                {
+                    for (int j = 0; j < setValues.Count; j++ )
+                        sensor[j].Add(setValues[j]);
+                }
+                i += 1;
+                
+                {
+
+                }
             }
-        ////Application.Current.Dispatcher.Invoke(new Action(() => { textBlock.Text = "X:" + xValue + "Y:" + yValue + "Z:" + zValue + "\n"; }));
+            ////Application.Current.Dispatcher.Invoke(new Action(() => { textBlock.Text = "X:" + xValue + "Y:" + yValue + "Z:" + zValue + "\n"; }));
         }
 
-        private void CreateLineSeries(int order, string title)
+        private void CreateLineSeries(int order)
         {
-           
+            
             LineSeries lineSeries1 = new LineSeries();
             Style dataPointStyle = DataPointStyle();
 
-            lineSeries1.Title = title;
+            lineSeries1.Title = "Title";
             lineSeries1.DependentValuePath = "Value";
             lineSeries1.IndependentValuePath = "Key";
             lineSeries1.Background = Brushes.Blue;
@@ -232,6 +251,40 @@ namespace GUI
                 sendBox.Text = "";
             }
         }
+
+        private void sendPeriod_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string command = "setPeriod=";
+                string period = sendBox.Text;
+
+                string setPeriod = command + period;
+
+                serial.SerialSend(setPeriod);
+                sendBox.Text = "";
+                //serial.SerialClose();
+            }
+            catch
+            {
+                MessageBox.Show("Port is not selected!");
+                sendBox.Text = "";
+            }
+        }
+
+        private void Start_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string command = "start=";
+                serial.SerialSend(command);
+            }
+            catch
+            {
+                MessageBox.Show("Port is not selected!");
+            }
+        }
+   
 
        
 

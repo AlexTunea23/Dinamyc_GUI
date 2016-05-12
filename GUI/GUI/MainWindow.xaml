@@ -9,7 +9,7 @@
     <Grid>
         <TabControl>
             <TabItem Header="Config">
-                <Grid Background="#FFE5E5E5" Margin="10,5,-10,-5">
+                <Grid Background="#FFE5E5E5" Margin="0,4,0,-4">
 
                     <Button Content="Connect" Click="buttonConnect_Click" HorizontalAlignment="Left" Margin="162,104,0,0" VerticalAlignment="Top" Width="75" Name="buttonConnect"/>
 
@@ -17,9 +17,14 @@
                     <ComboBox HorizontalAlignment="Left" Margin="117,77,0,0" VerticalAlignment="Top" Width="120" Name="Bauds"/>
                     <Label Content="Select Port" HorizontalAlignment="Left" Margin="45,50,0,0" VerticalAlignment="Top"/>
                     <Label Content="Select Baud Rate" HorizontalAlignment="Left" Margin="19,76,0,0" VerticalAlignment="Top"/>
-                    <Button Content="Send Serial" Click="SendData" HorizontalAlignment="Left" Margin="264,153,0,0" VerticalAlignment="Top" Width="75"/>
-                    <TextBox Name="sendBox" HorizontalAlignment="Left" Height="23" Margin="19,153,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="216"/>
-                    <TextBlock Background="AntiqueWhite" Name="receiveBlock" HorizontalAlignment="Left" Margin="19,193,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="52" Width="98"/>
+                    <Button Name="sendPeriod" Content="Set" Click="sendPeriod_Click" HorizontalAlignment="Left" Margin="242,153,0,0" VerticalAlignment="Top" Width="75" Height="23"/>
+                    <TextBox Name="sendBox" HorizontalAlignment="Left" Height="23" Margin="117,153,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <TextBlock Background="AntiqueWhite" Name="receiveBlock" HorizontalAlignment="Left" Margin="390,214,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="52" Width="98"/>
+                    <Label Content="Period" HorizontalAlignment="Left" Margin="68,153,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Treshold" HorizontalAlignment="Left" Margin="61,211,0,0" VerticalAlignment="Top"/>
+                    <TextBox Name="tresholdBox" HorizontalAlignment="Left" Height="23" Margin="117,214,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <Button Name="Start" Content="Start" HorizontalAlignment="Left" Click="Start_Click" Margin="242,214,0,0" VerticalAlignment="Top" Width="75" Height="23"/>
+
                 </Grid>
 
 

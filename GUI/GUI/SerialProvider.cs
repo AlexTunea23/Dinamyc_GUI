@@ -14,6 +14,8 @@ namespace GUI
         SerialPort mySerialPort=new SerialPort();
         List<string> receivedData = new List<string>();
         List<string> receiveAxis = new List<string>();
+        public string serial;
+       
       
         
 
@@ -38,6 +40,7 @@ namespace GUI
             mySerialPort.DataBits = 8;
             mySerialPort.Handshake = Handshake.None;
             mySerialPort.RtsEnable = true;
+            mySerialPort.DtrEnable = true;
         }
 
         public void SerialReceive()
@@ -61,7 +64,9 @@ namespace GUI
             try
             {
                 SerialPort mySerialPort = (SerialPort)sender;
-                receivedData.Add(mySerialPort.ReadLine());
+                serial = mySerialPort.ReadLine();
+                if(serial.Contains("$")&&serial.Contains("#")&&serial.Contains("\r"))
+                receivedData.Add(serial);
             }
             catch
             {
@@ -69,29 +74,30 @@ namespace GUI
         }
 
 
-        public string GetAxisName()
-        {
-            string name = receivedData.First();
-            receivedData.Remove(name);
-            return name;
-        }
-
+        
 
 
         public string GetFirstDataBuff()
         {
-            if (receivedData.Any())
+            if (receivedData.Exists(t=>t.Contains("$"))&&receivedData.Exists(t=>t.Contains("#"))&&receivedData.Exists(t=>t.Contains("\r")))
             {
                 string data = receivedData.First();
+                string finaldata = data;
                 receivedData.Remove(data);
-                data = data.Replace("\r\n", "").Replace("\r", "").Replace("\n", "");
+                int firstChar = finaldata.LastIndexOf("$");
+                int lastChar = finaldata.LastIndexOf("#");
+                if (firstChar < lastChar)
+                {
+                    finaldata = finaldata.Substring(firstChar, lastChar-firstChar);
+                    finaldata = finaldata.Replace("$", "").Replace("#", "").Replace("\r", "").Replace("\n", "");
 
-                return data;
+                    return finaldata;
+                }
             }
             return null;
         }
 
-
+        public bool IsOpen{get{return mySerialPort.IsOpen;}}
 
         public void SerialSend(string data)
         {
@@ -108,8 +114,12 @@ namespace GUI
                     mySerialPort.Write(_hexval, 0, 1);
                     //Thread.Sleep(1);
                 }
+                mySerialPort.Write("}");
             }
+            mySerialPort.Close();
         }
 
+
+ 
     }
 }
