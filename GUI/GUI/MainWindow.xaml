@@ -9,21 +9,37 @@
     <Grid>
         <TabControl>
             <TabItem Header="Config">
-                <Grid Background="#FFE5E5E5" Margin="0,4,0,-4">
+                <Grid Background="#FFE5E5E5" Margin="0,4,0,-4" RenderTransformOrigin="0.5,0.5">
+                    <Grid.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="0.016"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Grid.RenderTransform>
 
-                    <Button Content="Connect" Click="buttonConnect_Click" HorizontalAlignment="Left" Margin="162,104,0,0" VerticalAlignment="Top" Width="75" Name="buttonConnect"/>
+                    <Button Content="Connect" Click="buttonConnect_Click" HorizontalAlignment="Left" Margin="118,104,0,0" VerticalAlignment="Top" Width="199" Name="buttonConnect" Height="20"/>
 
-                    <ComboBox HorizontalAlignment="Left" Margin="117,50,0,0" VerticalAlignment="Top" Width="120" Name="Ports" AllowDrop="True" />
-                    <ComboBox HorizontalAlignment="Left" Margin="117,77,0,0" VerticalAlignment="Top" Width="120" Name="Bauds"/>
-                    <Label Content="Select Port" HorizontalAlignment="Left" Margin="45,50,0,0" VerticalAlignment="Top"/>
-                    <Label Content="Select Baud Rate" HorizontalAlignment="Left" Margin="19,76,0,0" VerticalAlignment="Top"/>
-                    <Button Name="sendPeriod" Content="Set" Click="sendPeriod_Click" HorizontalAlignment="Left" Margin="242,153,0,0" VerticalAlignment="Top" Width="75" Height="23"/>
-                    <TextBox Name="sendBox" HorizontalAlignment="Left" Height="23" Margin="117,153,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <ComboBox HorizontalAlignment="Left" Margin="117,22,0,0" VerticalAlignment="Top" Width="200" Name="Ports" AllowDrop="True" />
+                    <ComboBox HorizontalAlignment="Left" Margin="117,49,0,0" VerticalAlignment="Top" Width="200" Name="Bauds"/>
+                    <Label Content="Select Port" HorizontalAlignment="Left" Margin="23,22,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Select Baud Rate" HorizontalAlignment="Left" Margin="23,48,0,0" VerticalAlignment="Top"/>
+                    <Button Name="sendPeriodA1" Content="Set Period" Click="sendPeriodA1_Click" HorizontalAlignment="Left" Margin="242,129,0,0" VerticalAlignment="Top" Width="75" Height="23"/>
+                    <TextBox Name="sendBoxA1" HorizontalAlignment="Left" Height="23" Margin="117,129,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
                     <TextBlock Background="AntiqueWhite" Name="receiveBlock" HorizontalAlignment="Left" Margin="390,214,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="52" Width="98"/>
-                    <Label Content="Period" HorizontalAlignment="Left" Margin="68,153,0,0" VerticalAlignment="Top"/>
-                    <Label Content="Treshold" HorizontalAlignment="Left" Margin="61,211,0,0" VerticalAlignment="Top"/>
-                    <TextBox Name="tresholdBox" HorizontalAlignment="Left" Height="23" Margin="117,214,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                    <Button Name="Start" Content="Start" HorizontalAlignment="Left" Click="Start_Click" Margin="242,214,0,0" VerticalAlignment="Top" Width="75" Height="23"/>
+                    <Label Content="Timer Send" HorizontalAlignment="Left" Margin="19,128,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Sensitivity" HorizontalAlignment="Left" Margin="23,182,0,0" VerticalAlignment="Top"/>
+                    <TextBox Name="tresholdBox" HorizontalAlignment="Left" Height="23" Margin="118,185,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <Button Name="sendPeriodA0" Content="Set Period" HorizontalAlignment="Left" Click="sendPeriodA0_Click" Margin="242,157,0,0" VerticalAlignment="Top" Width="75" Height="23"/>
+                    <TextBox x:Name="sendBoxA0" HorizontalAlignment="Left" Height="23" Margin="118,157,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <Label Content="Timer Acquisition" HorizontalAlignment="Left" Margin="19,156,0,0" VerticalAlignment="Top"/>
+                    <Button x:Name="sendTreshold" Content="Set" HorizontalAlignment="Left" Click="sendTreshold_Click" Margin="242,185,0,0" VerticalAlignment="Top" Width="75" Height="23"/>
+                    <Button Content="Start Acquisition" Name="StartAcquisition" Click="StartAcquisition_Click" HorizontalAlignment="Left" Margin="117,213,0,0" VerticalAlignment="Top" Width="200" Height="21"/>
+                    <Button Content="Stop Acquisition" Name="StopAcquisition" Click="StopAcquisition_Click" HorizontalAlignment="Left" Margin="117,239,0,0" VerticalAlignment="Top" Width="200"/>
+                    <TextBox Name="axisTitle" HorizontalAlignment="Left" Height="23" Margin="118,76,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="199"/>
+                    <Label Content="ChartingAxis" HorizontalAlignment="Left" Margin="23,76,0,0" VerticalAlignment="Top"/>
+                    <TextBlock Background="AntiqueWhite" HorizontalAlignment="Left" Margin="343,25,0,0" TextWrapping="Wrap" Name="ReceiveBlock" VerticalAlignment="Top" Height="46" Width="119"/> 
 
                 </Grid>
 

@@ -34,7 +34,7 @@ namespace GUI
         bool flag = false;
         SerialProvider serial;
         public bool flagFormat;
-        double MaxDataPoint = 200;
+       
         int contor;
         DispatcherTimer timer = new DispatcherTimer();
 
@@ -46,6 +46,10 @@ namespace GUI
             InitializeComponent();
             GetPorts();
             SeTBaud();
+            DefaultConfig();
+            axisTitle.Text = "X-Accel,Y-Accel,Z-Accel";
+            axisTitle.IsEnabled = false;
+
         }
 
 
@@ -59,6 +63,12 @@ namespace GUI
             }
         }
 
+        private void DefaultConfig()
+        {
+            sendBoxA0.Text = "2000";
+            sendBoxA1.Text = "2000";
+            tresholdBox.Text = "250";
+        }
         private void SeTBaud()
         {
             Bauds.Items.Add("2400");
@@ -106,6 +116,7 @@ namespace GUI
             }
             else
             {
+               
                 try
                 {
                     serial.SerialClose();
@@ -143,7 +154,7 @@ namespace GUI
             else
             {
                 timer.IsEnabled = false;
-               //serial.SerialClose();
+               serial.SerialClose();
                buttonStart.Content = "Start";
             }
         }
@@ -156,17 +167,17 @@ namespace GUI
             if (databuff != null)
             {
                 string[] values = databuff.Split(',');
-                
+                var axis = axisTitle.Text;
+                string[] title = axis.Split(',');    
                 if (flag == false)
                 {
                     for (int k = 0; k < values.Length; k++)
                     {
                         sensor.Add(new ObservableCollection<KeyValuePair<double, double>>());
-                        CreateLineSeries(k);
+                        CreateLineSeries(k, title[k]);
                     }
                 }
                 flag = true;
-                //if(values.Length==3)
                 var checkconversion = true;
                 var setValues = new List<KeyValuePair<double, double>>();
                 for (int j = 0; j < values.Length; j++)
@@ -178,14 +189,11 @@ namespace GUI
                     {
                         contor += 1;
                         //receiveBlock.Text =""+ contor;
-                        Application.Current.Dispatcher.Invoke(new Action(() => { receiveBlock.Text += "Missing data counter" + contor; }));
+                        Application.Current.Dispatcher.Invoke(new Action(() => { receiveBlock.Text += "Missing data counter" + contor+"asdsa"+serial.contorReceive ; }));
                         break; 
                     }
                         
-                    //    int contor=0;
-                    //    contor++;
-                    //    Application.Current.Dispatcher.Invoke(new Action(() => { receiveBlock.Text += "Missing data counter" + contor; }));
-                    //}
+                   
                     setValues.Add(new KeyValuePair<double, double>(i, tempVal));
                 }
                 if (checkconversion)
@@ -194,21 +202,22 @@ namespace GUI
                         sensor[j].Add(setValues[j]);
                 }
                 i += 1;
-                
+                if(i>100)
                 {
-
+                    sensor[0].RemoveAt(0);
+                    sensor[1].RemoveAt(0);
+                    sensor[2].RemoveAt(0);
                 }
             }
-            ////Application.Current.Dispatcher.Invoke(new Action(() => { textBlock.Text = "X:" + xValue + "Y:" + yValue + "Z:" + zValue + "\n"; }));
         }
 
-        private void CreateLineSeries(int order)
+        private void CreateLineSeries(int order,string title)
         {
             
             LineSeries lineSeries1 = new LineSeries();
             Style dataPointStyle = DataPointStyle();
 
-            lineSeries1.Title = "Title";
+            lineSeries1.Title = title;
             lineSeries1.DependentValuePath = "Value";
             lineSeries1.IndependentValuePath = "Key";
             lineSeries1.Background = Brushes.Blue;
@@ -221,56 +230,25 @@ namespace GUI
 
         public Style DataPointStyle()
         {
-            Color randomColor = Color.FromRgb((byte)randonGen.Next(256), (byte)randonGen.Next(256), (byte)randonGen.Next(256)); 
+            Color randomColor = Color.FromRgb((byte)randonGen.Next(789), (byte)randonGen.Next(255), (byte)randonGen.Next(356)); 
             Style style = new Style(typeof(DataPoint));
             Setter st1 = new Setter(DataPoint.BackgroundProperty, new SolidColorBrush(randomColor));
             Setter st2 = new Setter(DataPoint.BorderBrushProperty,new SolidColorBrush(Colors.White));
-            Setter st3 = new Setter(DataPoint.BorderThicknessProperty, new Thickness(0.1));
+            Setter st3 = new Setter(DataPoint.BorderThicknessProperty, new Thickness(0.2));
             Setter st4 = new Setter(DataPoint.TemplateProperty, null);
+           
             style.Setters.Add(st1);
             style.Setters.Add(st2);
             style.Setters.Add(st3);
-            style.Setters.Add(st4);
+            //style.Setters.Add(st4);
          
             return style;
         }
 
 
-        private void SendData(object sender, RoutedEventArgs e)
-        {
-            //serial.SerialOpen();
-            try
-            {
-                serial.SerialSend(sendBox.Text);
-                sendBox.Text = "";
-                //serial.SerialClose();
-            }
-            catch
-            {
-                MessageBox.Show("Port is not selected!");
-                sendBox.Text = "";
-            }
-        }
+      
 
-        private void sendPeriod_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                string command = "setPeriod=";
-                string period = sendBox.Text;
-
-                string setPeriod = command + period;
-
-                serial.SerialSend(setPeriod);
-                sendBox.Text = "";
-                //serial.SerialClose();
-            }
-            catch
-            {
-                MessageBox.Show("Port is not selected!");
-                sendBox.Text = "";
-            }
-        }
+        
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
@@ -284,10 +262,102 @@ namespace GUI
                 MessageBox.Show("Port is not selected!");
             }
         }
-   
 
-       
+        private void sendPeriodA1_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string command = "setPeriodA1=";
+                string periodA1 = sendBoxA1.Text;
 
+                string setPeriodA1 = command + periodA1;
+
+                serial.SerialSend(setPeriodA1);
+                sendPeriodA1.IsEnabled = false;
+            }
+            catch
+            {
+                MessageBox.Show("Port is not selected!");
+                sendBoxA1.Text = "";
+            }
+        }
+
+        private void sendPeriodA0_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                
+                string command = "setPeriodA0=";
+                string periodA0 = sendBoxA0.Text;
+
+                string setPeriodA0 = command + periodA0;
+
+                serial.SerialSend(setPeriodA0);
+                sendPeriodA0.IsEnabled = false;
+            }
+            catch
+            {
+                MessageBox.Show("Port is not selected!");
+                sendBoxA0.Text = "";
+            }
+        }
+
+        private void sendTreshold_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string command = "setTreshold=";
+                string treshold = tresholdBox.Text;
+
+                string setTreshold = command + treshold;
+
+                serial.SerialSend(setTreshold);
+                sendTreshold.IsEnabled = false;
+            }
+            catch
+            {
+                MessageBox.Show("Port is not selected!");
+                tresholdBox.Text = "";
+            }
+        }
+
+        private void StartAcquisition_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string command = "start=";
+                serial.SerialSend(command);
+                StartAcquisition.IsEnabled = false;
+                StopAcquisition.IsEnabled = true;
+                sendTreshold.IsEnabled = false;
+                sendPeriodA0.IsEnabled = false;
+                sendPeriodA1.IsEnabled = false;
+
+            }
+            catch
+            {
+                MessageBox.Show("Port is not selected!");
+            }
+        }
+
+        private void StopAcquisition_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string command = "stop=";
+                serial.SerialSend(command);
+                StopAcquisition.IsEnabled = false;
+                StartAcquisition.IsEnabled = true;
+                sendTreshold.IsEnabled = true;
+                sendPeriodA0.IsEnabled = true;
+                sendPeriodA1.IsEnabled = true;
+            }
+            catch
+            {
+                MessageBox.Show("Port is not selected!");
+                tresholdBox.Text = "";
+            }
+        }
     }
 }
 

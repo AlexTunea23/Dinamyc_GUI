@@ -15,6 +15,7 @@ namespace GUI
         List<string> receivedData = new List<string>();
         List<string> receiveAxis = new List<string>();
         public string serial;
+        public int contorReceive = 0;
        
       
         
@@ -65,8 +66,14 @@ namespace GUI
             {
                 SerialPort mySerialPort = (SerialPort)sender;
                 serial = mySerialPort.ReadLine();
-                if(serial.Contains("$")&&serial.Contains("#")&&serial.Contains("\r"))
-                receivedData.Add(serial);
+                if (serial.Contains("$") && serial.Contains("#") && serial.Contains("\r"))
+                {
+                    receivedData.Add(serial);
+                }
+                else
+                {
+                    contorReceive++;
+                }
             }
             catch
             {
@@ -81,7 +88,7 @@ namespace GUI
         {
             if (receivedData.Exists(t=>t.Contains("$"))&&receivedData.Exists(t=>t.Contains("#"))&&receivedData.Exists(t=>t.Contains("\r")))
             {
-                string data = receivedData.First();
+                string data = receivedData.Last();
                 string finaldata = data;
                 receivedData.Remove(data);
                 int firstChar = finaldata.LastIndexOf("$");
@@ -117,9 +124,6 @@ namespace GUI
                 mySerialPort.Write("}");
             }
             mySerialPort.Close();
-        }
-
-
- 
+        } 
     }
 }
