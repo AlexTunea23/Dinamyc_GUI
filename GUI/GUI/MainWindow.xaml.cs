@@ -19,6 +19,7 @@ using System.Management;
 using System.IO;
 using System.Windows.Controls.DataVisualization.Charting;
 using System.Windows.Media;
+using System.Threading;
 
 namespace GUI
 {
@@ -28,18 +29,20 @@ namespace GUI
     public partial class MainWindow : Window
     {
         Random randonGen = new Random();
+        Random random1 = new Random();
+        Random random2 = new Random();
         public string[] values;
         public string[] names;
         LineSeries lineSeries1 = new LineSeries();
         bool flag = false;
         SerialProvider serial;
         public bool flagFormat;
-       
         int contor;
         DispatcherTimer timer = new DispatcherTimer();
-
+        Color colorSet = new Color();
         List<ObservableCollection<KeyValuePair<double, double>>> sensor = new List<ObservableCollection<KeyValuePair<double, double>>>();
-        //List<LineSeries> lineSeries= new List<LineSeries>();
+        
+        KeyValuePair<double,double>xaxis=new KeyValuePair<double,double>();
 
         public MainWindow()
         {
@@ -51,7 +54,6 @@ namespace GUI
             axisTitle.IsEnabled = false;
 
         }
-
 
         private void GetPorts()
         {
@@ -80,23 +82,6 @@ namespace GUI
             Bauds.Items.Add("115200");
         }
 
-        //private void GetSerialName()
-        //{
-        //    string result = "";
-        //    using (var searcher = new ManagementObjectSearcher("SELECT * FROM WIN32_SerialPort"))
-        //    {
-        //        string[] portnames = SerialPort.GetPortNames();
-        //        var ports = searcher.Get().Cast<ManagementBaseObject>().ToList();
-        //        var tList = (from n in portnames join p in ports on n equals p["DeviceID"].ToString() select n + " - " + p["Caption"]).ToList();
-
-        //        foreach (string s in tList)
-        //        {
-        //            result = result + s;
-        //        }
-        //    }
-        //}
-
-
         private void buttonConnect_Click(object sender, RoutedEventArgs e)
         {
             if ((string)buttonConnect.Content == "Connect")
@@ -113,13 +98,15 @@ namespace GUI
                     MessageBox.Show("Port is not selected!");
                 }
                 buttonConnect.Content = "Disconect";
+                ResetButtons();
             }
             else
             {
                
                 try
                 {
-                    serial.SerialClose();
+                    //serial.SerialClose();
+                    ResetButtons();
                     buttonConnect.Content = "Connect";
                 }
                 catch
@@ -153,9 +140,20 @@ namespace GUI
             }
             else
             {
-                timer.IsEnabled = false;
-               serial.SerialClose();
-               buttonStart.Content = "Start";
+                if (serial.IsOpen)
+                {
+                    var maxX=sensor[0].Max(t=>t.Value);
+                    var maxY = sensor[1].Max(t => t.Value);
+                    var maxZ = sensor[2].Max(t => t.Value);
+
+                    Application.Current.Dispatcher.Invoke(new Action(() => { maxValue.Text = "x"+maxX+"Y"+maxY+"z"+maxZ; }));
+
+                    
+                 
+                    timer.IsEnabled = false;
+                    serial.SerialClose();
+                    buttonStart.Content = "Start";
+                }
             }
         }
 
@@ -163,7 +161,11 @@ namespace GUI
         private void timer_Tick(object sender, EventArgs e)
         {
             var databuff = serial.GetFirstDataBuff();
-           
+            if(serial.contorReceive>0)
+            {
+                Application.Current.Dispatcher.Invoke(new Action(() => { dataMissed.Text += +serial.contorReceive; }));
+                dataMissed.Text = "";
+            }
             if (databuff != null)
             {
                 string[] values = databuff.Split(',');
@@ -188,8 +190,7 @@ namespace GUI
                     if (!checkconversion)
                     {
                         contor += 1;
-                        //receiveBlock.Text =""+ contor;
-                        Application.Current.Dispatcher.Invoke(new Action(() => { receiveBlock.Text += "Missing data counter" + contor+"asdsa"+serial.contorReceive ; }));
+                        Application.Current.Dispatcher.Invoke(new Action(() => { receiveBlock.Text += +contor; }));
                         break; 
                     }
                         
@@ -215,7 +216,7 @@ namespace GUI
         {
             
             LineSeries lineSeries1 = new LineSeries();
-            Style dataPointStyle = DataPointStyle();
+            Style dataPointStyle = DataPointStyle(order);
 
             lineSeries1.Title = title;
             lineSeries1.DependentValuePath = "Value";
@@ -226,13 +227,11 @@ namespace GUI
             lineSeries1.DataPointStyle = dataPointStyle;
         }
 
-
-
-        public Style DataPointStyle()
+        public Style DataPointStyle(int number)
         {
-            Color randomColor = Color.FromRgb((byte)randonGen.Next(789), (byte)randonGen.Next(255), (byte)randonGen.Next(356)); 
+            Color colorRan = ColorSetter(number);
             Style style = new Style(typeof(DataPoint));
-            Setter st1 = new Setter(DataPoint.BackgroundProperty, new SolidColorBrush(randomColor));
+            Setter st1 = new Setter(DataPoint.BackgroundProperty, new SolidColorBrush(colorRan));
             Setter st2 = new Setter(DataPoint.BorderBrushProperty,new SolidColorBrush(Colors.White));
             Setter st3 = new Setter(DataPoint.BorderThicknessProperty, new Thickness(0.2));
             Setter st4 = new Setter(DataPoint.TemplateProperty, null);
@@ -244,11 +243,6 @@ namespace GUI
          
             return style;
         }
-
-
-      
-
-        
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
@@ -273,7 +267,7 @@ namespace GUI
                 string setPeriodA1 = command + periodA1;
 
                 serial.SerialSend(setPeriodA1);
-                sendPeriodA1.IsEnabled = false;
+                sendPeriodA1.Background= Brushes.Gray;
             }
             catch
             {
@@ -293,7 +287,7 @@ namespace GUI
                 string setPeriodA0 = command + periodA0;
 
                 serial.SerialSend(setPeriodA0);
-                sendPeriodA0.IsEnabled = false;
+                sendPeriodA0.Background = Brushes.Gray;
             }
             catch
             {
@@ -312,11 +306,11 @@ namespace GUI
                 string setTreshold = command + treshold;
 
                 serial.SerialSend(setTreshold);
-                sendTreshold.IsEnabled = false;
+                sendTreshold.Background = Brushes.Gray;
             }
             catch
             {
-                MessageBox.Show("Port is not selected!");
+                MessageBox.Show("Port is not available!");
                 tresholdBox.Text = "";
             }
         }
@@ -336,7 +330,7 @@ namespace GUI
             }
             catch
             {
-                MessageBox.Show("Port is not selected!");
+                MessageBox.Show("Port is not available!");
             }
         }
 
@@ -346,17 +340,64 @@ namespace GUI
             {
                 string command = "stop=";
                 serial.SerialSend(command);
-                StopAcquisition.IsEnabled = false;
+                
                 StartAcquisition.IsEnabled = true;
-                sendTreshold.IsEnabled = true;
-                sendPeriodA0.IsEnabled = true;
-                sendPeriodA1.IsEnabled = true;
+                ResetButtons();
+                StopAcquisition.IsEnabled = false;
             }
-            catch
+            catch(Exception excep)
             {
-                MessageBox.Show("Port is not selected!");
-                tresholdBox.Text = "";
+                MessageBox.Show("Port is not available!");
             }
+          
+        }
+        
+        public void ResetButtons()
+        {
+             StartAcquisition.IsEnabled = true;
+             StopAcquisition.IsEnabled = true;
+             sendPeriodA0.IsEnabled = true;
+             sendPeriodA1.IsEnabled = true;
+             sendTreshold.IsEnabled = true;
+             sendTreshold.Background = Brushes.LightGray;
+             sendPeriodA0.Background = Brushes.LightGray;
+             sendPeriodA1.Background = Brushes.LightGray;
+        }
+
+        public string[] ColourValues = new string[] { 
+        "FF0000", "00FF00", "0000FF", "FFFF00", "FF00FF", "00FFFF", "000000", 
+        "800000", "008000", "000080", "808000", "800080", "008080", "808080", 
+        "C00000", "00C000", "0000C0", "C0C000", "C000C0", "00C0C0", "C0C0C0", 
+        "400000", "004000", "000040", "404000", "400040", "004040", "404040", 
+        "200000", "002000", "000020", "202000", "200020", "002020", "202020", 
+        "600000", "006000", "000060", "606000", "600060", "006060", "606060", 
+        "A00000", "00A000", "0000A0", "A0A000", "A000A0", "00A0A0", "A0A0A0", 
+        "E00000", "00E000", "0000E0", "E0E000", "E000E0", "00E0E0", "E0E0E0", 
+    };
+        public Color ColorSetter(int setter)
+        {
+           
+            if (setter == 0)
+            {
+                Color c1 = Color.FromRgb(173, 255, 47);
+                colorSet = c1;
+            }
+            else if(setter==1)
+            {
+                Color c2 = Color.FromRgb(0, 191, 255);
+                colorSet = c2;
+            }
+            else if(setter==2)
+            {
+           
+                Color c3 = Color.FromRgb(255, 0, 0);
+                colorSet = c3;
+            }
+            else if(setter==3)
+            {
+                Color c4= Color.FromRgb(250,250,210);
+            }
+            return colorSet;
         }
     }
 }
