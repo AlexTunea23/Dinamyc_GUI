@@ -1,0 +1,17 @@
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\bin\Release\GUI.exe.config
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\bin\Release\GUI.exe
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\bin\Release\GUI.pdb
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\bin\Release\System.Windows.Controls.DataVisualization.Toolkit.dll
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\bin\Release\System.Windows.Controls.Input.Toolkit.dll
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\bin\Release\System.Windows.Controls.Layout.Toolkit.dll
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\bin\Release\WPFToolkit.dll
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\obj\Release\GUI.csprojResolveAssemblyReference.cache
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\obj\Release\MainWindow.baml
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\obj\Release\MainWindow.g.cs
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\obj\Release\App.g.cs
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\obj\Release\GUI_MarkupCompile.cache
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\obj\Release\GUI.g.resources
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\obj\Release\GUI.Properties.Resources.resources
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\obj\Release\GUI.csproj.GenerateResource.Cache
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\obj\Release\GUI.exe
+C:\Users\PetruAlexandru\Desktop\Dinamyc_GUI\GUI\GUI\obj\Release\GUI.pdb

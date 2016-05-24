@@ -41,7 +41,7 @@ namespace GUI
         DispatcherTimer timer = new DispatcherTimer();
         Color colorSet = new Color();
         List<ObservableCollection<KeyValuePair<double, double>>> sensor = new List<ObservableCollection<KeyValuePair<double, double>>>();
-        
+        public int dataPoint;
         KeyValuePair<double,double>xaxis=new KeyValuePair<double,double>();
 
         public MainWindow()
@@ -52,7 +52,6 @@ namespace GUI
             DefaultConfig();
             axisTitle.Text = "X-Accel,Y-Accel,Z-Accel";
             axisTitle.IsEnabled = false;
-
         }
 
         private void GetPorts()
@@ -132,8 +131,9 @@ namespace GUI
                     timer.Tick += new EventHandler(timer_Tick);
                     timer.IsEnabled = true;
                     buttonStart.Content = "Stop";
+                    checkDataPoint.IsEnabled = false;
                 }
-                catch(Exception ex)
+                catch
                 {
                     MessageBox.Show("Port is not selected");
                 }
@@ -146,9 +146,12 @@ namespace GUI
                     var maxY = sensor[1].Max(t => t.Value);
                     var maxZ = sensor[2].Max(t => t.Value);
 
-                    Application.Current.Dispatcher.Invoke(new Action(() => { maxValue.Text = "x"+maxX+"Y"+maxY+"z"+maxZ; }));
+                    var minX = sensor[0].Min(t => t.Value);
+                    var minY = sensor[1].Min(t => t.Value);
+                    var minZ = sensor[2].Min(t => t.Value);
 
-                    
+                    Application.Current.Dispatcher.Invoke(new Action(() => { maxValue.Text = "X:" + maxX+" " + "Y:" +maxY+ " " + "Z:" +maxZ; }));
+                    Application.Current.Dispatcher.Invoke(new Action(() => { minValue.Text = "X:" + minX + " " + "Y:" + minY + " " + "Z:" + minZ; }));
                  
                     timer.IsEnabled = false;
                     serial.SerialClose();
@@ -176,7 +179,16 @@ namespace GUI
                     for (int k = 0; k < values.Length; k++)
                     {
                         sensor.Add(new ObservableCollection<KeyValuePair<double, double>>());
-                        CreateLineSeries(k, title[k]);
+                        if(dataPoint==1)
+                        {
+                            CreateLineSeriesVisibleDataPoint(k, title[k]);
+                            lineSeries1.DataPointStyle = DataPointStyle(1);
+                        }
+                        else
+                        {
+                            CreateLineSeries(k, title[k]);
+                        }
+                        
                     }
                 }
                 flag = true;
@@ -227,6 +239,21 @@ namespace GUI
             lineSeries1.DataPointStyle = dataPointStyle;
         }
 
+        private void CreateLineSeriesVisibleDataPoint(int order, string title)
+        {
+
+            LineSeries lineSeries1 = new LineSeries();
+            Style dataPointStyle = DataPointStyleVisibleDataPoint(order);
+
+            lineSeries1.Title = title;
+            lineSeries1.DependentValuePath = "Value";
+            lineSeries1.IndependentValuePath = "Key";
+            lineSeries1.Background = Brushes.Blue;
+            lineSeries1.ItemsSource = sensor[order];
+            lineChart.Series.Add(lineSeries1);
+            lineSeries1.DataPointStyle = dataPointStyle;
+        }
+
         public Style DataPointStyle(int number)
         {
             Color colorRan = ColorSetter(number);
@@ -239,8 +266,24 @@ namespace GUI
             style.Setters.Add(st1);
             style.Setters.Add(st2);
             style.Setters.Add(st3);
-            //style.Setters.Add(st4);
+            style.Setters.Add(st4);
          
+            return style;
+        }
+
+        public Style DataPointStyleVisibleDataPoint(int number)
+        {
+            Color colorRan = ColorSetter(number);
+            Style style = new Style(typeof(DataPoint));
+            Setter st1 = new Setter(DataPoint.BackgroundProperty, new SolidColorBrush(colorRan));
+            Setter st2 = new Setter(DataPoint.BorderBrushProperty, new SolidColorBrush(Colors.White));
+            Setter st3 = new Setter(DataPoint.BorderThicknessProperty, new Thickness(0.2));
+            Setter st4 = new Setter(DataPoint.TemplateProperty, null);
+
+            style.Setters.Add(st1);
+            style.Setters.Add(st2);
+            style.Setters.Add(st3);
+
             return style;
         }
 
@@ -398,6 +441,16 @@ namespace GUI
                 Color c4= Color.FromRgb(250,250,210);
             }
             return colorSet;
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            dataPoint = 1;
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            dataPoint = 0;
         }
     }
 }
