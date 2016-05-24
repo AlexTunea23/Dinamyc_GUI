@@ -52,6 +52,7 @@ namespace GUI
             DefaultConfig();
             axisTitle.Text = "X-Accel,Y-Accel,Z-Accel";
             axisTitle.IsEnabled = false;
+            dataPointNumber.Text = "200";
         }
 
         private void GetPorts()
@@ -215,7 +216,10 @@ namespace GUI
                         sensor[j].Add(setValues[j]);
                 }
                 i += 1;
-                if(i>100)
+                string dataP=dataPointNumber.Text;
+                int dataPoints = int.Parse(dataP);
+                dataPointNumber.IsEnabled = false;
+                if(i>dataPoints)
                 {
                     sensor[0].RemoveAt(0);
                     sensor[1].RemoveAt(0);
@@ -452,8 +456,25 @@ namespace GUI
         {
             dataPoint = 0;
         }
-    }
+    
+    //private Image CaptureScreen()
+    //{
+    //    Rectangle screenSize = Screen.PrimaryScreen.Bounds;
+    //    Bitmap target = new Bitmap(screenSize.Width,screenSize.Height);
+    //    using(Graphics g = Graphics.FromImage(target))
+    //    {
+    //        g.CopyFromScreen(0,0,0,0,new Size(screenSize.Width,screenSize.Height));
+    //    }
+    //    return target;
+    //}
 }
+    
+    
+    }
+
+
+
+
 
  
        
