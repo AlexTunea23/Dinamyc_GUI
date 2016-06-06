@@ -14,7 +14,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-
 using System.Management;
 using System.IO;
 using System.Windows.Controls.DataVisualization.Charting;
@@ -43,7 +42,8 @@ namespace GUI
         List<ObservableCollection<KeyValuePair<double, double>>> sensor = new List<ObservableCollection<KeyValuePair<double, double>>>();
         public int dataPoint;
         KeyValuePair<double,double>xaxis=new KeyValuePair<double,double>();
-
+        public bool dataPointFlag=false;
+        public bool startingPointFlag = true;
         public MainWindow()
         {
             InitializeComponent();
@@ -52,7 +52,7 @@ namespace GUI
             DefaultConfig();
             axisTitle.Text = "X-Accel,Y-Accel,Z-Accel";
             axisTitle.IsEnabled = false;
-            dataPointNumber.Text = "200";
+            dataPointNumber.Text = "5000";
         }
 
         private void GetPorts()
@@ -133,6 +133,7 @@ namespace GUI
                     timer.IsEnabled = true;
                     buttonStart.Content = "Stop";
                     checkDataPoint.IsEnabled = false;
+                    dataPointNumber.IsEnabled = false;
                 }
                 catch
                 {
@@ -143,6 +144,8 @@ namespace GUI
             {
                 if (serial.IsOpen)
                 {
+                    dataPointFlag = true;
+                    startingPointFlag = false;
                     var maxX=sensor[0].Max(t=>t.Value);
                     var maxY = sensor[1].Max(t => t.Value);
                     var maxZ = sensor[2].Max(t => t.Value);
@@ -153,10 +156,14 @@ namespace GUI
 
                     Application.Current.Dispatcher.Invoke(new Action(() => { maxValue.Text = "X:" + maxX+" " + "Y:" +maxY+ " " + "Z:" +maxZ; }));
                     Application.Current.Dispatcher.Invoke(new Action(() => { minValue.Text = "X:" + minX + " " + "Y:" + minY + " " + "Z:" + minZ; }));
-                 
-                    timer.IsEnabled = false;
+             
+               
+              
+                        timer.IsEnabled = false;
                     serial.SerialClose();
                     buttonStart.Content = "Start";
+                   // dataPointNumber.IsEnabled = true;
+                    
                 }
             }
         }
@@ -167,8 +174,8 @@ namespace GUI
             var databuff = serial.GetFirstDataBuff();
             if(serial.contorReceive>0)
             {
-                Application.Current.Dispatcher.Invoke(new Action(() => { dataMissed.Text += +serial.contorReceive; }));
-                dataMissed.Text = "";
+                Application.Current.Dispatcher.Invoke(new Action(() => { dataMissed.Text = "Number of packeges: "+serial.contorReceive; }));
+                //dataMissed.Text = "";
             }
             if (databuff != null)
             {
@@ -203,11 +210,9 @@ namespace GUI
                     if (!checkconversion)
                     {
                         contor += 1;
-                        Application.Current.Dispatcher.Invoke(new Action(() => { receiveBlock.Text += +contor; }));
+                        Application.Current.Dispatcher.Invoke(new Action(() => { receiveBlock.Text ="Number of unprocessed data: " +contor; }));
                         break; 
                     }
-                        
-                   
                     setValues.Add(new KeyValuePair<double, double>(i, tempVal));
                 }
                 if (checkconversion)
@@ -215,16 +220,40 @@ namespace GUI
                     for (int j = 0; j < setValues.Count; j++ )
                         sensor[j].Add(setValues[j]);
                 }
-                i += 1;
+                i = (i+0.38*10);
                 string dataP=dataPointNumber.Text;
                 int dataPoints = int.Parse(dataP);
-                dataPointNumber.IsEnabled = false;
-                if(i>dataPoints)
-                {
-                    sensor[0].RemoveAt(0);
-                    sensor[1].RemoveAt(0);
-                    sensor[2].RemoveAt(0);
-                }
+                dataPoints = dataPoints / 10;
+                //if (startingPointFlag == true)
+                // {
+                    if (i > dataPoints)
+                    {
+                
+                        sensor[0].RemoveAt(0);
+                        sensor[1].RemoveAt(0);
+                        sensor[2].RemoveAt(0);
+                    }
+                    dataPointFlag = false;
+                //}
+                //if (dataPointFlag == true)
+                //{
+                //    startingPointFlag = false;
+                //    dataP = dataPointNumber.Text;
+                //    dataPoints = int.Parse(dataP);
+                //    double checking = 0;
+                //    checking = i;
+                //    if (sensor[0].Count() > dataPoints)
+                //    {
+                //        for (int q = 0; q > sensor[0].Count - dataPoints; q++)
+                //        {
+                //            sensor[0].RemoveAt(0);
+                //            sensor[1].RemoveAt(0);
+                //            sensor[2].RemoveAt(0);
+                //        }
+                //    }
+                //    dataPointFlag = false;
+                //    startingPointFlag = true;
+                //}
             }
         }
 
@@ -282,7 +311,7 @@ namespace GUI
             Setter st1 = new Setter(DataPoint.BackgroundProperty, new SolidColorBrush(colorRan));
             Setter st2 = new Setter(DataPoint.BorderBrushProperty, new SolidColorBrush(Colors.White));
             Setter st3 = new Setter(DataPoint.BorderThicknessProperty, new Thickness(0.2));
-            Setter st4 = new Setter(DataPoint.TemplateProperty, null);
+            //Setter st4 = new Setter(DataPoint.TemplateProperty, null);
 
             style.Setters.Add(st1);
             style.Setters.Add(st2);
@@ -457,16 +486,6 @@ namespace GUI
             dataPoint = 0;
         }
     
-    //private Image CaptureScreen()
-    //{
-    //    Rectangle screenSize = Screen.PrimaryScreen.Bounds;
-    //    Bitmap target = new Bitmap(screenSize.Width,screenSize.Height);
-    //    using(Graphics g = Graphics.FromImage(target))
-    //    {
-    //        g.CopyFromScreen(0,0,0,0,new Size(screenSize.Width,screenSize.Height));
-    //    }
-    //    return target;
-    //}
 }
     
     

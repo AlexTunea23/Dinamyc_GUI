@@ -4,11 +4,11 @@
         xmlns:DV="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit" 
         xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit" 
 
-        Title="GUI" Height="350" Width="525">
+        Title="LIVE CHARTING" Height="350" Width="525">
 
     <Grid>
         <TabControl>
-            <TabItem Header="Config">
+            <TabItem Header="Hardware">
                 <Grid Background="#FFE5E5E5" Margin="0,4,0,-4" RenderTransformOrigin="0.5,0.5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="65*"/>
@@ -29,22 +29,31 @@
                     <ComboBox HorizontalAlignment="Left" Margin="52.045,49,0,0" VerticalAlignment="Top" Width="200" Name="Bauds" Grid.Column="1"/>
                     <Label Content="Select Port" HorizontalAlignment="Left" Margin="23,22,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label Content="Select Baud Rate" HorizontalAlignment="Left" Margin="23,48,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                    <Button Name="sendPeriodA1" Content="Set Period" Click="sendPeriodA1_Click" HorizontalAlignment="Left" Margin="177.045,129,0,0" VerticalAlignment="Top" Width="75" Height="23" Grid.Column="1"/>
+                    <Button Name="sendPeriodA1" Content="Set Period" Click="sendPeriodA1_Click" HorizontalAlignment="Left" Margin="177,129,0,0" VerticalAlignment="Top" Width="75" Height="23" Grid.Column="1"/>
                     <TextBox Name="sendBoxA1" HorizontalAlignment="Left" Height="23" Margin="52.045,129,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Grid.Column="1"/>
                     <TextBlock Background="AntiqueWhite" Name="receiveBlock" HorizontalAlignment="Left" Margin="278.045,213,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="46" Width="119" Grid.Column="1"/>
                     <Label Content="Timer Send" HorizontalAlignment="Left" Margin="19,128,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                    <Label Content="Sensitivity" HorizontalAlignment="Left" Margin="23,182,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <Label Content="Threshold" HorizontalAlignment="Left" Margin="19,184,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <TextBox Name="tresholdBox" HorizontalAlignment="Left" Height="23" Margin="53.045,185,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Grid.Column="1"/>
                     <Button Name="sendPeriodA0" Content="Set Period" HorizontalAlignment="Left" Click="sendPeriodA0_Click" Margin="177.045,157,0,0" VerticalAlignment="Top" Width="75" Height="23" Grid.Column="1"/>
                     <TextBox x:Name="sendBoxA0" HorizontalAlignment="Left" Height="23" Margin="53.045,157,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Grid.Column="1"/>
-                    <Label Content="Timer Acquisition" HorizontalAlignment="Left" Margin="19,156,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <Label Content="Acquistion (μs)&#xD;&#xA;" HorizontalAlignment="Left" Margin="20,154,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="107" RenderTransformOrigin="0.5,0.5">
+                        <Label.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="-360.502"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Label.RenderTransform>
+                    </Label>
                     <Button x:Name="sendTreshold" Content="Set" HorizontalAlignment="Left" Click="sendTreshold_Click" Margin="177.045,185,0,0" VerticalAlignment="Top" Width="75" Height="23" Grid.Column="1"/>
                     <Button Content="Start Acquisition" Name="StartAcquisition" Click="StartAcquisition_Click" HorizontalAlignment="Left" Margin="52.045,213,0,0" VerticalAlignment="Top" Width="200" Height="21" Grid.Column="1"/>
                     <Button Content="Stop Acquisition" Name="StopAcquisition" Click="StopAcquisition_Click" HorizontalAlignment="Left" Margin="52.045,239,0,0" VerticalAlignment="Top" Width="200" Grid.Column="1"/>
                     <TextBox Name="axisTitle" HorizontalAlignment="Left" Height="23" Margin="53.045,76,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="199" Grid.Column="1"/>
                     <Label Content="ChartingAxis" HorizontalAlignment="Left" Margin="23,76,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                    <TextBlock Background="AntiqueWhite" HorizontalAlignment="Left" Margin="278.045,129,0,0" TextWrapping="Wrap" Name="dataMissed" VerticalAlignment="Top" Height="46" Width="119" Grid.Column="1"/>
-                    <Label Content="Missed data in chart&#xD;&#xA;" HorizontalAlignment="Left" Margin="278.045,184,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Width="158" Grid.Column="1">
+                    <TextBlock Background="AntiqueWhite" HorizontalAlignment="Left" Margin="278,129,0,0" TextWrapping="Wrap" Name="dataMissed" VerticalAlignment="Top" Height="46" Width="119" Grid.Column="1"/>
+                    <Label Content="Missing data in chart&#xA;" HorizontalAlignment="Left" Margin="278.045,184,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Width="158" Grid.Column="1">
                         <Label.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform/>
@@ -54,13 +63,13 @@
                             </TransformGroup>
                         </Label.RenderTransform>
                     </Label>
-                    <Label Content="Missed data through serial" HorizontalAlignment="Left" Margin="278.045,98,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                    <Label Content="Serial corrupted data" HorizontalAlignment="Left" Margin="278.045,98,0,0" VerticalAlignment="Top" Grid.Column="1"/>
 
                 </Grid>
 
 
             </TabItem>
-            <TabItem Header="Chart">
+            <TabItem Header="Live Charting">
                 <TabItem.Resources>
                     <Style x:Key="InvisibleDataPoint0" TargetType="{x:Type chartingToolkit:DataPoint}">
                         <Setter Property="Background" Value="Blue"/>
@@ -150,13 +159,14 @@
                     DataPointStyle="{StaticResource InvisibleDataPoint2}"/>-->
 
                     </chartingToolkit:Chart>
-                    <Button Name="buttonStart" Content="Start" Click="buttonStartClick" Grid.Column="1" HorizontalAlignment="Right" Margin="0,65,25,0" Grid.Row="1" VerticalAlignment="Top" Width="85"/>
-                    <TextBlock Name="maxValue" Background="AliceBlue" HorizontalAlignment="Left" Margin="155,19,0,0" Grid.Row="1" TextWrapping="Wrap" Height="25" Width="156" VerticalAlignment="Top" Grid.Column="1"/>
-                    <TextBlock x:Name="minValue" Background="AliceBlue" HorizontalAlignment="Left" Margin="155,49,0,0" Grid.Row="1" TextWrapping="Wrap" Height="23" Width="156" VerticalAlignment="Top" Grid.Column="1"/>
-                    <Label Content="Maximum &#xA;" Margin="79,19,296,0" Grid.Row="1" VerticalAlignment="Top" Height="26" Grid.Column="1"/>
-                    <Label Content="Minimum" Margin="79,48,296,0" Grid.Row="1" VerticalAlignment="Top" Height="26" Grid.Column="1"/>
-                    <CheckBox Content="Data Points&#xD;&#xA;" Name="checkDataPoint" HorizontalAlignment="Right" Margin="0,19,25,0" Grid.Row="1"  Grid.Column="1" Width="85" VerticalAlignment="Top" Height="18" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
-                    <TextBox Grid.Column="1" Name="dataPointNumber" HorizontalAlignment="Right" Height="23" Margin="0,37,25,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="85"/>
+                    <Button Name="buttonStart" Content="Start" Click="buttonStartClick" Grid.Column="1" HorizontalAlignment="Right" Margin="0,78,25,0" Grid.Row="1" VerticalAlignment="Top" Width="85"/>
+                    <TextBlock Name="maxValue" Background="AliceBlue" HorizontalAlignment="Left" Margin="86,19,0,0" Grid.Row="1" TextWrapping="Wrap" Height="25" Width="156" VerticalAlignment="Top" Grid.Column="1"/>
+                    <TextBlock x:Name="minValue" Background="AliceBlue" HorizontalAlignment="Left" Margin="86,50,0,0" Grid.Row="1" TextWrapping="Wrap" Height="23" Width="156" VerticalAlignment="Top" Grid.Column="1"/>
+                    <Label Content="Maximum &#xA;" Margin="10,19,365,0" Grid.Row="1" VerticalAlignment="Top" Height="26" Grid.Column="1"/>
+                    <Label Content="Minimum" Margin="10,47,365,0" Grid.Row="1" VerticalAlignment="Top" Height="26" Grid.Column="1"/>
+                    <CheckBox Content="Data Points&#xD;&#xA;" Name="checkDataPoint" HorizontalAlignment="Right" Margin="0,32,25,0" Grid.Row="1"  Grid.Column="1" Width="85" VerticalAlignment="Top" Height="18" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+                    <TextBox Grid.Column="1" Name="dataPointNumber" HorizontalAlignment="Right" Height="23" Margin="0,50,25,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="85"/>
+                    <Label Content="Time(ms)" Grid.Column="1" HorizontalAlignment="Left" Margin="273,50,0,0" Grid.Row="1" VerticalAlignment="Top"/>
 
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
