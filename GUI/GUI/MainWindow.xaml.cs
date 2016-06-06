@@ -220,10 +220,10 @@ namespace GUI
                     for (int j = 0; j < setValues.Count; j++ )
                         sensor[j].Add(setValues[j]);
                 }
-                i = (i+0.38*10);
+                i = (i+0.38*100);
                 string dataP=dataPointNumber.Text;
                 int dataPoints = int.Parse(dataP);
-                dataPoints = dataPoints / 10;
+                
                 //if (startingPointFlag == true)
                 // {
                     if (i > dataPoints)
