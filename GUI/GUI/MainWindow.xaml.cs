@@ -44,14 +44,16 @@ namespace GUI
         KeyValuePair<double,double>xaxis=new KeyValuePair<double,double>();
         public bool dataPointFlag=false;
         public bool startingPointFlag = true;
+        string axis = "X-Accel,Y-Accel,Z-Accel";
+
         public MainWindow()
         {
             InitializeComponent();
             GetPorts();
             SeTBaud();
             DefaultConfig();
-            axisTitle.Text = "X-Accel,Y-Accel,Z-Accel";
-            axisTitle.IsEnabled = false;
+            //axisTitle.Text = "X-Accel,Y-Accel,Z-Accel";
+            //axisTitle.IsEnabled = false;
             dataPointNumber.Text = "5000";
         }
 
@@ -69,7 +71,7 @@ namespace GUI
         {
             sendBoxA0.Text = "2000";
             sendBoxA1.Text = "2000";
-            tresholdBox.Text = "250";
+            tresholdBox.Text = "100";
         }
         private void SeTBaud()
         {
@@ -144,19 +146,25 @@ namespace GUI
             {
                 if (serial.IsOpen)
                 {
-                    dataPointFlag = true;
-                    startingPointFlag = false;
-                    var maxX=sensor[0].Max(t=>t.Value);
-                    var maxY = sensor[1].Max(t => t.Value);
-                    var maxZ = sensor[2].Max(t => t.Value);
+                    try
+                    {
+                        dataPointFlag = true;
+                        startingPointFlag = false;
+                        var maxX = sensor[0].Max(t => t.Value);
+                        var maxY = sensor[1].Max(t => t.Value);
+                        var maxZ = sensor[2].Max(t => t.Value);
 
-                    var minX = sensor[0].Min(t => t.Value);
-                    var minY = sensor[1].Min(t => t.Value);
-                    var minZ = sensor[2].Min(t => t.Value);
+                        var minX = sensor[0].Min(t => t.Value);
+                        var minY = sensor[1].Min(t => t.Value);
+                        var minZ = sensor[2].Min(t => t.Value);
 
-                    Application.Current.Dispatcher.Invoke(new Action(() => { maxValue.Text = "X:" + maxX+" " + "Y:" +maxY+ " " + "Z:" +maxZ; }));
-                    Application.Current.Dispatcher.Invoke(new Action(() => { minValue.Text = "X:" + minX + " " + "Y:" + minY + " " + "Z:" + minZ; }));
-             
+                        Application.Current.Dispatcher.Invoke(new Action(() => { maxValue.Text = "X:" + maxX + " " + "Y:" + maxY + " " + "Z:" + maxZ; }));
+                        Application.Current.Dispatcher.Invoke(new Action(() => { minValue.Text = "X:" + minX + " " + "Y:" + minY + " " + "Z:" + minZ; }));
+                    }
+                    catch
+                    {
+                        MessageBox.Show("No charting!!!");
+                    }
                
               
                         timer.IsEnabled = false;
@@ -180,7 +188,6 @@ namespace GUI
             if (databuff != null)
             {
                 string[] values = databuff.Split(',');
-                var axis = axisTitle.Text;
                 string[] title = axis.Split(',');    
                 if (flag == false)
                 {
@@ -220,7 +227,7 @@ namespace GUI
                     for (int j = 0; j < setValues.Count; j++ )
                         sensor[j].Add(setValues[j]);
                 }
-                i = (i+0.38*100);
+                i = (i+0.36*100);
                 string dataP=dataPointNumber.Text;
                 int dataPoints = int.Parse(dataP);
                 
